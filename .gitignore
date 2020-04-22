@@ -1,0 +1,8 @@
+Debug/
+*.xcf
+*.gif
+*.pyxel
+*.user
+build/
+cmake-build-debug/
+.idea/
