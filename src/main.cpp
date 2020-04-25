@@ -23,16 +23,25 @@ Vec3 missColor(const Ray& r) {
   return ((1.0 - t) * Vec3(1.0, 1.0, 1.0)) + (t * Vec3(0.5, 0.7, 1.0));
 }
 
-Vec3 color(const Ray& ray, const Hittable* world) {
-  HitRecord hitRec;
-  if(world->hit(ray, 0.0, MAX_FLOAT, hitRec)) {
-    return (hitRec.normal + 1.0) * 0.5;
-  }
-  return missColor(ray);
-}
-
 inline float randFraction() {
   return randomFractionDistribution(randomGenerator);
+}
+
+Vec3 randPointInUnitSphere() {
+  Vec3 randomPoint;
+  do{
+    randomPoint = (Vec3(randFraction(), randFraction(), randFraction()) * 2.0) - Vec3(1.0, 1.0, 1.0);
+  } while(randomPoint.lengthSquared() >= 1.0);
+  return randomPoint;
+}
+
+Vec3 color(const Ray& ray, const Hittable* world) {
+  HitRecord hitRec;
+  if(world->hit(ray, 0.001, MAX_FLOAT, hitRec)) {
+    Vec3 target = hitRec.position + hitRec.normal + randPointInUnitSphere();
+    return color(Ray(hitRec.position, target - hitRec.position), world) * 0.5;
+  }
+  return missColor(ray);
 }
 
 int main()
@@ -55,6 +64,7 @@ int main()
       }
 
       col /= float(antiAliasRayCount);
+      col = Vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
       int pixelRed = int(255.99 * col.r());
       int pixelGreen = int(255.99 * col.g());
       int pixelBlue = int(255.99 * col.b());
