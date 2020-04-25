@@ -1,20 +1,21 @@
 #include <iostream>
+#include <random>
+
 #include "Vec3.h"
 #include "Ray.h"
 #include "Hittable.h"
 #include "Sphere.h"
 #include "Util.h"
+#include "Camera.h"
 
 #define MAX_FLOAT std::numeric_limits<float>::max()
 
 const int pixelWidth = 200;
 const int pixelHeight = 100;
-const Vec3 eyeOrigin = Vec3(0.0, 0.0, 0.0);
-const Vec3 bottomLeftCorner = Vec3(-2.0, -1.0, -1.0);
-const float width = 4.0;
-const float height = 2.0;
+const int antiAliasRayCount = 100;
 
-const Vec3 sphereColor = Vec3(1.0, 0.0, 0.0);
+std::default_random_engine randomGenerator;
+std::uniform_real_distribution<float> randomFractionDistribution(0.0f, 1.0f);
 
 Vec3 missColor(const Ray& r) {
   Vec3 normalizedDir = normalize(r.dir());
@@ -30,6 +31,10 @@ Vec3 color(const Ray& ray, const Hittable* world) {
   return missColor(ray);
 }
 
+inline float randFraction() {
+  return randomFractionDistribution(randomGenerator);
+}
+
 int main()
 {
   // ppm header: P3 means colors are in ascii, dimens are pixelWidth by pixelHeight, each pixel ranges from 0-255
@@ -39,14 +44,17 @@ int main()
   spheres[0] = new Sphere(Vec3(0.0, 0.0, -1.0), 0.5);
   spheres[1] = new Sphere(Vec3(0.0, -100.5, -1.0), 100);
   Hittable *world = new HittableList(spheres, ArrayCount(spheres));
+  Camera camera;
   for(int pixelY = pixelHeight - 1; pixelY > -1; --pixelY) {
     for(int pixelX = 0; pixelX < pixelWidth; ++pixelX ) {
-      float u = float(pixelX) / float(pixelWidth);
-      float v = float(pixelY) / float(pixelHeight);
+      Vec3 col(0.0, 0.0, 0.0);
+      for(int k = 0; k < antiAliasRayCount; ++k) {
+        float u = float(pixelX + randFraction()) / float(pixelWidth);
+        float v = float(pixelY + randFraction()) / float(pixelHeight);
+        col += color(camera.getRay(u, v), world);
+      }
 
-      Ray ray(eyeOrigin, bottomLeftCorner + Vec3(u * width, v * height, 0.0));
-
-      Vec3 col = color(ray, world);
+      col /= float(antiAliasRayCount);
       int pixelRed = int(255.99 * col.r());
       int pixelGreen = int(255.99 * col.g());
       int pixelBlue = int(255.99 * col.b());
@@ -54,6 +62,5 @@ int main()
       std::cout << pixelRed << " " << pixelGreen << " " << pixelBlue << "\n";
     }
   }
-
-  return 0;
 }
+
