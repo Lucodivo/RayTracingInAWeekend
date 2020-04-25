@@ -2,10 +2,13 @@
 
 #include "Ray.h"
 
+class Material;
+
 struct HitRecord {
   float t;
   Vec3 position;
   Vec3 normal;
+  Material* materialPtr;
 };
 
 class Hittable {

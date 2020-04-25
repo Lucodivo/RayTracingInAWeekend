@@ -2,14 +2,16 @@
 
 #include "Vec3.h"
 #include "Hittable.h"
+#include "Material.h"
 
 class Sphere: public Hittable {
 public:
   Vec3 center;
   float radius;
+  Material* material;
 
   Sphere() {}
-  Sphere(Vec3 c, float r) : center(c), radius(r) {};
+  Sphere(Vec3 c, float r, Material* m) : center(c), radius(r), material(m) {};
   virtual bool hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const;
 };
 
@@ -29,6 +31,7 @@ bool Sphere::hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const {
     rec.t = value;
     rec.position = r.at(value);
     rec.normal = (rec.position - center) / radius;
+    rec.materialPtr = material;
     return true;
   }
 
@@ -37,6 +40,7 @@ bool Sphere::hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const {
     rec.t = value;
     rec.position = r.at(value);
     rec.normal = (rec.position - center) / radius;
+    rec.materialPtr = material;
     return true;
   }
 

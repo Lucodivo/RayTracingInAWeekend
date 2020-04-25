@@ -131,3 +131,9 @@ inline Vec3 cross(const Vec3 &v1, const Vec3 &v2) {
               -(v1.e[0] * v2.e[2] - v1.e[2] * v2.e[1]),
               (v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]));
 }
+
+// NOTE: Normal is expected to be normalized
+inline Vec3 reflect(const Vec3& vec, const Vec3& normal) {
+  Vec3 projVecOnNormal = dot(vec, normal) * normal;
+  return vec - (2.0 * projVecOnNormal);
+}
