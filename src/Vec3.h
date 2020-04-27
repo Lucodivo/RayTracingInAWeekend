@@ -137,3 +137,33 @@ inline Vec3 reflect(const Vec3& vec, const Vec3& normal) {
   Vec3 projVecOnNormal = dot(vec, normal) * normal;
   return vec - (2.0 * projVecOnNormal);
 }
+
+// NOTE: Normal is expected to be normalized
+// NOTE: indexOfRefraction represents the refractive index of the starting media over the refractive index of the entering media
+bool refract(const Vec3& vec, const Vec3& normal, float indexOfRefraction, Vec3& refracted) {
+  Vec3 normalizedVec = normalize(vec);
+  float cosThetaIncoming = dot(normalizedVec, normal); // against normal
+  // Trig identity: Sin^2() + Cos^2() = 1
+  float sinSqThetaIncoming = 1.0 - (cosThetaIncoming * cosThetaIncoming);
+  // Snell's law: incomingIndexOfRefraction * Sin(incomingTheta) = outgoingIndexOfRefraction * Sin(outgoingTheta)
+  // Sin(outgoingTheta) = (incomingIndexOfRefraction / outgoingIndexOfRefraction) * Sin(incomingTheta)
+  // indexOfRefraction = incomingIndexOfRefraction / outgoingIndexOfRefraction
+  // Sin(outgoingTheta) = indexOfRefraction * Sin(incomingTheta)
+  // Sin^2(outgoingTheta) = indexOfRefraction^2 * Sin^2(incomingTheta)
+  float sinSqThetaOutgoing = (indexOfRefraction * indexOfRefraction) * sinSqThetaIncoming;
+  // Trig identity: Sin^2() + Cos^2() = 1
+  float cosSqThetaOutgoing = 1.0 - sinSqThetaOutgoing;
+  // NOTE: Can't get sqrt of negative number
+  if(cosSqThetaOutgoing > 0.0) {
+    // Refracted vector = normalPerpendicular * Sin(outgoingTheta) - normal * Cos(outgoingTheta)
+    // normalPerpendicular = (incidentVec - (normal * Cos(incomingTheta))) / sin(incomingTheta) // NOTE: dividing by sin(incomingTheta) normalizes vector
+    // Sin(outgoingTheta) * normalPerpendicular = (Sin(outgoingTheta) / Sin(incomingTheta)) * (normal * Cos(incomingTheta) - incidentVec)
+    // Sin(outgoingTheta) / Sin(incomingTheta) = incomingIndexOfRefraction / outgoingIndexOfRefraction <--- Snell's Law
+    // Sin(outgoingTheta) * normalPerpendicular = indexOfRefraction * (incidentVec - normal * Cos(incomingTheta))
+    Vec3 refractedVectorPerp = indexOfRefraction * (normalizedVec - (normal * cosThetaIncoming));
+    Vec3 refractedVectorParallel = normal * sqrt(cosSqThetaOutgoing);
+    refracted = refractedVectorPerp - refractedVectorParallel;
+    return true;
+  }
+  return false;
+}

@@ -41,10 +41,11 @@ int main()
   std::cout << "P3\n" << pixelWidth << " " << pixelHeight << "\n255\n";
 
   Hittable *spheres[] = {
-          new Sphere(Vec3(0.0, 0.0, -1.0), 0.5, new Lambertian(Vec3(0.8, 0.3, 0.3))),
+          new Sphere(Vec3(0.0, 0.0, -1.0), 0.5, new Lambertian(Vec3(0.1, 0.2, 0.5))),
           new Sphere(Vec3(0.0, -100.5, -1.0), 100, new Lambertian(Vec3(0.8, 0.8, 0.0))),
           new Sphere(Vec3(1.0, 0, -1.0), 0.5, new Metal(Vec3(0.8, 0.6, 0.2), 0.3)),
-          new Sphere(Vec3(-1.0, 0.0, -1.0), 0.5, new Metal(Vec3(0.8, 0.8, 0.8), 1.0))
+          new Sphere(Vec3(-1.0, 0.0, -1.0), 0.5, new Dielectric(1.5)),
+          new Sphere(Vec3(-1.0, 0.0, -1.0), -0.45, new Dielectric(1.5))
   };
   Hittable *world = new HittableList(spheres, ArrayCount(spheres));
   Camera camera;
