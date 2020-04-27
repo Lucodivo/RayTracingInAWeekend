@@ -48,7 +48,7 @@ int main()
           new Sphere(Vec3(-1.0, 0.0, -1.0), -0.45, new Dielectric(1.5))
   };
   Hittable *world = new HittableList(spheres, ArrayCount(spheres));
-  Camera camera;
+  Camera camera(Vec3(-2.0, 2.0, 1.0), Vec3(0.0, 0.0, -1.0), Vec3(0.0, 1.0, 0.0), 20.0, (float)pixelWidth / (float)pixelHeight);
   for(int pixelY = pixelHeight - 1; pixelY >= 0; --pixelY) {
     for(int pixelX = 0; pixelX < pixelWidth; ++pixelX ) {
       Vec3 col(0.0, 0.0, 0.0);

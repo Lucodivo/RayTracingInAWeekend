@@ -6,19 +6,27 @@ class Camera {
 public:
   Vec3 origin;
   Vec3 bottomLeftCorner;
-  float width;
-  float height;
+  Vec3 vertical;
+  Vec3 horizontal;
 
+  // NOTE: verticalFOV is in degrees
+  Camera(Vec3 lookFrom, Vec3 lookAt, Vec3 viewUp, float verticalFOV, float aspect) {
+    float fovRads = verticalFOV * PI / 180.0;
+    float halfHeight = tan(fovRads / 2.0);
+    float halfWidth = aspect * halfHeight;
+    origin = lookFrom;
 
-  Camera() {
-    origin = Vec3(0.0, 0.0, 0.0);
-    bottomLeftCorner = Vec3(-2.0, -1.0, -1.0);
-    width = 4.0;
-    height = 2.0;
+    Vec3 w = normalize(lookFrom - lookAt);
+    Vec3 u = normalize(cross(viewUp, w));
+    Vec3 v = normalize(cross(w, u));
+
+    bottomLeftCorner = origin - (halfWidth * u) - (halfHeight * v) - w;
+    horizontal = 2.0 * halfWidth * u;
+    vertical = 2.0 * halfHeight * v;
   }
 
   Ray getRay(float u, float v) {
-    return Ray(origin, bottomLeftCorner + Vec3(u * width, v * height, 0.0) - origin);
+    return Ray(origin, bottomLeftCorner + (u * horizontal) + (v * vertical) - origin);
   }
 
 };

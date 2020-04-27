@@ -4,6 +4,8 @@
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
+#define PI 3.141592f
+
 std::default_random_engine randomGenerator;
 std::uniform_real_distribution<float> randomFractionDistribution(0.0f, 1.0f);
 
