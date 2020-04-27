@@ -3,7 +3,6 @@ Debug/
 *.gif
 *.pyxel
 *.user
-*.ppm
 build/
 cmake-build-debug/
 .idea/
