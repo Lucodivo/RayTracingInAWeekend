@@ -40,6 +40,12 @@ int main()
   // ppm header: P3 means colors are in ascii, dimens are pixelWidth by pixelHeight, each pixel ranges from 0-255
   std::cout << "P3\n" << pixelWidth << " " << pixelHeight << "\n255\n";
 
+  Vec3 lookFrom(3.0, 3.0, 2.0);
+  Vec3 lookAt(0.0, 0.0, -1.0);
+  float focusDist = (lookAt - lookFrom).length();
+  float aperture = 2.0;
+  Camera camera(lookFrom, lookAt, Vec3(0.0, 1.0, 0.0), 20.0, (float)pixelWidth / (float)pixelHeight, aperture, focusDist);
+
   Hittable *spheres[] = {
           new Sphere(Vec3(0.0, 0.0, -1.0), 0.5, new Lambertian(Vec3(0.1, 0.2, 0.5))),
           new Sphere(Vec3(0.0, -100.5, -1.0), 100, new Lambertian(Vec3(0.8, 0.8, 0.0))),
@@ -48,13 +54,12 @@ int main()
           new Sphere(Vec3(-1.0, 0.0, -1.0), -0.45, new Dielectric(1.5))
   };
   Hittable *world = new HittableList(spheres, ArrayCount(spheres));
-  Camera camera(Vec3(-2.0, 2.0, 1.0), Vec3(0.0, 0.0, -1.0), Vec3(0.0, 1.0, 0.0), 20.0, (float)pixelWidth / (float)pixelHeight);
   for(int pixelY = pixelHeight - 1; pixelY >= 0; --pixelY) {
     for(int pixelX = 0; pixelX < pixelWidth; ++pixelX ) {
       Vec3 col(0.0, 0.0, 0.0);
       for(int k = 0; k < antiAliasRayCount; ++k) {
-        float u = float(pixelX + randFraction()) / float(pixelWidth);
-        float v = float(pixelY + randFraction()) / float(pixelHeight);
+        float u = float(pixelX + randomFraction()) / float(pixelWidth);
+        float v = float(pixelY + randomFraction()) / float(pixelHeight);
         col += color(camera.getRay(u, v), world, 0);
       }
 
