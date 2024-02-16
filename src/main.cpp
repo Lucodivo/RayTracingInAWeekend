@@ -10,8 +10,8 @@
 #define MAX_FLOAT std::numeric_limits<float>::max()
 #define MAX_ITERATIONS 50
 
-const int pixelWidth = 200;
-const int pixelHeight = 100;
+const int pixelWidth = 600;
+const int pixelHeight = 300;
 const int antiAliasRayCount = 100;
 
 Vec3 missColor(const Ray& r) {
@@ -66,7 +66,10 @@ Hittable *randomScene() {
 int main()
 {
   // ppm header: P3 means colors are in ascii, dimens are pixelWidth by pixelHeight, each pixel ranges from 0-255
-  std::cout << "P3\n" << pixelWidth << " " << pixelHeight << "\n255\n";
+//  std::cout << "P3\n" << pixelWidth << " " << pixelHeight << "\n255\n";
+  FILE* resultPPMFile;
+  fopen_s(&resultPPMFile, "ray_tracing_in_a_weekend_result.ppm", "w");
+  fprintf(resultPPMFile, "P3\n%d %d\n255\b\n", pixelWidth, pixelHeight);
 
   Vec3 lookFrom(13.0, 2.0, 3.0);
   Vec3 lookAt(0.0, 0.0, 0.0);
@@ -97,9 +100,10 @@ int main()
       int pixelGreen = int(255.99 * col.g());
       int pixelBlue = int(255.99 * col.b());
 
-      std::cout << pixelRed << " " << pixelGreen << " " << pixelBlue << "\n";
+      fprintf(resultPPMFile, "%d %d %d\n", pixelRed, pixelGreen, pixelBlue);
     }
   }
+  fclose(resultPPMFile);
 
   return 0;
 }
